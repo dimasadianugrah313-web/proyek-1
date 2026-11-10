@@ -25,13 +25,6 @@ $penjualanTerbaru = $penjualanModel->getRiwayat(10);
 require_once __DIR__ . '/../../includes/header.php';
 ?>
 
-<!-- Tombol Aksi Pintas Pemilik -->
-<div style="display:flex; justify-content: flex-end; margin-bottom: 14px; gap: 8px;">
-    <a href="<?= BASE_URL ?>/pages/pemilik/reset_data.php" class="btn btn-sm btn-secondary" style="border-color: #D7CCC8;">
-        Reset / Hapus Data
-    </a>
-</div>
-
 <!-- KPI / Stat Cards Pemilik -->
 <div class="stats-grid">
     <div class="stat-card">

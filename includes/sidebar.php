@@ -70,13 +70,6 @@ $role = current_user_role();
                 </a>
             </li>
 
-            <li class="menu-category">Pengaturan Sistem</li>
-            <li>
-                <a href="<?= BASE_URL ?>/pages/pemilik/reset_data.php" class="<?= $current_script === 'reset_data.php' ? 'active' : '' ?>">
-                    <span>Reset / Hapus Data</span>
-                </a>
-            </li>
-
         <?php elseif ($role === 'chef'): ?>
             <li class="menu-category">Utama</li>
             <li>
