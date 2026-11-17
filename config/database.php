@@ -17,6 +17,7 @@ class Database {
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                     PDO::ATTR_EMULATE_PREPARES => true,
+                    PDO::MYSQL_ATTR_MULTI_STATEMENTS => true,
                 ];
 
                 $dsn = "mysql:host=" . self::$host . ";dbname=" . self::$db_name . ";charset=utf8mb4";
@@ -34,16 +35,34 @@ class Database {
                     }
                 }
 
-                // Cek apakah tabel utama (pengguna) sudah ada, jika belum, import otomatis dari database.sql
-                $checkTable = self::$conn->query("SHOW TABLES LIKE 'pengguna'");
+                // Cek apakah tabel utama sudah ada dan data menu lengkap (120 menu), jika belum import dari database.sql
+                $needImport = false;
+                $checkTable = self::$conn->query("SHOW TABLES LIKE 'menu'");
                 if ($checkTable->rowCount() === 0) {
+                    $needImport = true;
+                } else {
+                    $countMenu = (int)self::$conn->query("SELECT COUNT(*) FROM `menu`")->fetchColumn();
+                    if ($countMenu < 50) {
+                        $needImport = true;
+                    }
+                }
+
+                if ($needImport) {
                     $sqlFile = __DIR__ . '/../database.sql';
                     if (file_exists($sqlFile)) {
                         $sqlContent = file_get_contents($sqlFile);
-                        // Sesuaikan USE database jika ada
-                        $sqlContent = preg_replace('/USE `?[^`]+`?;/i', 'USE `' . self::$db_name . '`;', $sqlContent);
+                        $sqlContent = preg_replace('/USE `?[^`]+`?;/i', '', $sqlContent);
                         $sqlContent = preg_replace('/CREATE DATABASE IF NOT EXISTS [^;]+;/i', '', $sqlContent);
-                        self::$conn->exec($sqlContent);
+                        try {
+                            self::$conn->exec($sqlContent);
+                        } catch (PDOException $ex) {
+                            $statements = array_filter(array_map('trim', explode(";\n", $sqlContent)));
+                            foreach ($statements as $stmt) {
+                                if (!empty($stmt)) {
+                                    self::$conn->exec($stmt);
+                                }
+                            }
+                        }
                     }
                 }
 
