@@ -15,8 +15,28 @@ class Opname {
         $this->bahanModel = new BahanBaku();
     }
 
-    // Proses input opname bahan baku
-    public function prosesOpname($id_bahan, $stok_fisik_input, $id_user) {
+    // Hitung selisih: selisih = stok fisik - stok sistem
+    public function hitungSelisih($stok_fisik, $stok_sistem) {
+        return (float)$stok_fisik - (float)$stok_sistem;
+    }
+
+    // Simpan riwayat stock opname ke database (Q-009)
+    public function simpanRiwayat($id_bahan, $id_user, $stok_sistem, $stok_fisik, $selisih) {
+        $stmtInsert = $this->db->prepare("
+            INSERT INTO opname (tanggal, stok_sistem, stok_fisik, selisih, id_bahan, id_user) 
+            VALUES (NOW(), :sistem, :fisik, :selisih, :id_bahan, :id_user)
+        ");
+        return $stmtInsert->execute([
+            ':sistem' => (float)$stok_sistem,
+            ':fisik' => (float)$stok_fisik,
+            ':selisih' => (float)$selisih,
+            ':id_bahan' => (int)$id_bahan,
+            ':id_user' => (int)$id_user
+        ]);
+    }
+
+    // Menjalankan stock opname dan menyinkronkan stok sistem dengan stok fisik (Algo-004)
+    public function sinkronisasiStok($id_bahan, $stok_fisik_input, $id_user) {
         if ($stok_fisik_input === '' || $stok_fisik_input === null) {
             return [
                 'success' => false,
@@ -41,38 +61,27 @@ class Opname {
         }
 
         $stok_sistem = (float)$bahan['stok_bahan'];
-        $selisih = $stok_sistem - $stok_fisik; // Sesuai rumus: selisih = stok_sistem - stok_fisik
+        // Rumus Stock Opname: selisih = stok fisik - stok sistem
+        $selisih = $this->hitungSelisih($stok_fisik, $stok_sistem);
 
         try {
             $this->db->beginTransaction();
 
             // Simpan riwayat opname
-            $stmtInsert = $this->db->prepare("
-                INSERT INTO opname (tanggal, stok_sistem, stok_fisik, selisih, id_bahan, id_user) 
-                VALUES (NOW(), :sistem, :fisik, :selisih, :id_bahan, :id_user)
-            ");
-            $stmtInsert->execute([
-                ':sistem' => $stok_sistem,
-                ':fisik' => $stok_fisik,
-                ':selisih' => $selisih,
-                ':id_bahan' => (int)$id_bahan,
-                ':id_user' => (int)$id_user
-            ]);
+            $this->simpanRiwayat($id_bahan, $id_user, $stok_sistem, $stok_fisik, $selisih);
 
             // Jika selisih != 0, sesuaikan stok_bahan di database ke stok fisik
             if ($selisih != 0) {
-                $this->bahanModel->updateStokFisik($id_bahan, $stok_fisik);
+                $this->bahanModel->sinkronisasiStok($id_bahan, $stok_fisik);
             }
 
             $this->db->commit();
-
-            $status_teks = ($selisih == 0) ? "Sesuai" : "Tersesuaikan (Selisih: " . format_angka($selisih) . " " . htmlspecialchars($bahan['satuan']) . ")";
 
             return [
                 'success' => true,
                 'selisih' => $selisih,
                 'status' => ($selisih == 0) ? 'Sesuai' : 'Penyesuaian',
-                'message' => 'Data berhasil diproses'
+                'message' => 'Sinkronisasi stok berhasil'
             ];
         } catch (Exception $e) {
             if ($this->db->inTransaction()) {
@@ -83,6 +92,11 @@ class Opname {
                 'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
             ];
         }
+    }
+
+    // Alias untuk backward compatibility
+    public function prosesOpname($id_bahan, $stok_fisik_input, $id_user) {
+        return $this->sinkronisasiStok($id_bahan, $stok_fisik_input, $id_user);
     }
 
     // Ambil riwayat stock opname

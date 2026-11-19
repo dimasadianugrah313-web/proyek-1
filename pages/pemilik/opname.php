@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!is_numeric($stok_fisik_raw) || (float)$stok_fisik_raw < 0) {
         $error = 'Stok fisik harus berupa angka valid non-negatif.';
     } else {
-        $hasil = $opnameModel->prosesOpname($id_bahan, (float)$stok_fisik_raw, current_user_id());
+        $hasil = $opnameModel->sinkronisasiStok($id_bahan, (float)$stok_fisik_raw, current_user_id());
         if ($hasil['success']) {
             set_flash('success', $hasil['message']);
             header("Location: " . BASE_URL . "/pages/pemilik/opname.php");
@@ -96,7 +96,7 @@ require_once __DIR__ . '/../../includes/header.php';
                 <!-- Box Preview Selisih -->
                 <div id="diffPreviewBox" style="background: #FFF; border: 1px dashed var(--border-color); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 20px;">
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">
-                        Rumus: Selisih = Stok Sistem - Stok Fisik
+                        Rumus: Selisih = Stok Fisik - Stok Sistem
                     </div>
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <span style="font-weight: 600;">Status Selisih:</span>
@@ -146,13 +146,13 @@ require_once __DIR__ . '/../../includes/header.php';
                                 <td><strong><?= htmlspecialchars($o['nama_bahan']) ?></strong></td>
                                 <td><?= format_angka($o['stok_sistem']) ?> <?= htmlspecialchars($o['satuan']) ?></td>
                                 <td><?= format_angka($o['stok_fisik']) ?> <?= htmlspecialchars($o['satuan']) ?></td>
-                                <td style="font-weight:700; color: <?= (float)$o['selisih'] == 0 ? 'var(--color-success)' : 'var(--color-danger)' ?>;">
-                                    <?= format_angka($o['selisih']) ?> <?= htmlspecialchars($o['satuan']) ?>
+                                <td style="font-weight:700; color: <?= (float)$o['selisih'] == 0 ? 'var(--color-success)' : ((float)$o['selisih'] < 0 ? 'var(--color-danger)' : 'var(--color-info)') ?>;">
+                                    <?= ((float)$o['selisih'] > 0 ? '+' : '') . format_angka($o['selisih']) ?> <?= htmlspecialchars($o['satuan']) ?>
                                 </td>
                                 <td>
                                     <?php if ((float)$o['selisih'] == 0): ?>
                                         <span class="badge badge-success">Sesuai</span>
-                                    <?php elseif ((float)$o['selisih'] > 0): ?>
+                                    <?php elseif ((float)$o['selisih'] < 0): ?>
                                         <span class="badge badge-warning">Selisih Kurang</span>
                                     <?php else: ?>
                                         <span class="badge badge-info">Selisih Lebih</span>
@@ -198,14 +198,14 @@ function calcOpnameDiff() {
 
     if (fisikInput.value !== '') {
         const fisikVal = parseFloat(fisikInput.value) || 0;
-        const selisih = sistemStok - fisikVal;
+        const selisih = fisikVal - sistemStok;
 
-        lblNilai.textContent = (selisih >= 0 ? '+' : '') + selisih.toLocaleString('id-ID') + ' ' + satuan;
+        lblNilai.textContent = (selisih > 0 ? '+' : '') + selisih.toLocaleString('id-ID') + ' ' + satuan;
 
         if (selisih === 0) {
             lblStatus.textContent = 'Sesuai (0)';
             lblStatus.className = 'badge badge-success';
-        } else if (selisih > 0) {
+        } else if (selisih < 0) {
             lblStatus.textContent = 'Selisih Kurang (Fisik < Sistem)';
             lblStatus.className = 'badge badge-warning';
         } else {

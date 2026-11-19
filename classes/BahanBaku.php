@@ -134,8 +134,14 @@ class BahanBaku {
         return $stmt->rowCount() > 0;
     }
 
-    // Update stok fisik saat opname
-    public function updateStokFisik($id_bahan, $stok_fisik) {
+    // Ambil stok saat ini berdasarkan ID bahan baku
+    public function getStokSaatIni($id_bahan) {
+        $bahan = $this->getById($id_bahan);
+        return $bahan ? (float)$bahan['stok_bahan'] : 0.0;
+    }
+
+    // Sinkronisasi stok bahan baku saat opname
+    public function sinkronisasiStok($id_bahan, $stok_fisik) {
         $stmt = $this->db->prepare("
             UPDATE bahan_baku 
             SET stok_bahan = :stok_fisik 
@@ -145,5 +151,10 @@ class BahanBaku {
             ':stok_fisik' => (float)$stok_fisik,
             ':id' => (int)$id_bahan
         ]);
+    }
+
+    // Update stok fisik saat opname (alias backward-compatible)
+    public function updateStokFisik($id_bahan, $stok_fisik) {
+        return $this->sinkronisasiStok($id_bahan, $stok_fisik);
     }
 }
