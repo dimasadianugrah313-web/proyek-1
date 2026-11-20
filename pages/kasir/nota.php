@@ -24,7 +24,7 @@ $is_new = isset($_GET['new']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nota #TRX-<?= str_pad($penjualan['id_penjualan'], 5, '0', STR_PAD_LEFT) ?> - LO.LO Coffee & Resto</title>
+    <title>Detail Struk #TRX-<?= str_pad($penjualan['id_penjualan'], 5, '0', STR_PAD_LEFT) ?> - LO.LO Coffee & Resto</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css">
     <style>
         .receipt-card {
@@ -91,12 +91,14 @@ $is_new = isset($_GET['new']);
         </div>
     <?php endif; ?>
     <div style="display:flex; justify-content:space-between; gap:10px;">
-        <a href="<?= BASE_URL ?>/pages/kasir/penjualan.php" class="btn btn-secondary">
-            &larr; Transaksi Baru
+        <a href="<?= BASE_URL ?>/pages/kasir/riwayat_penjualan.php" class="btn btn-secondary">
+            &larr; Riwayat Penjualan
         </a>
-        <button type="button" onclick="window.print()" class="btn btn-primary">
-            Cetak Struk
-        </button>
+        <?php if (current_user_role() === 'kasir'): ?>
+            <a href="<?= BASE_URL ?>/pages/kasir/penjualan.php" class="btn btn-primary">
+                + Transaksi Baru
+            </a>
+        <?php endif; ?>
     </div>
 </div>
 
