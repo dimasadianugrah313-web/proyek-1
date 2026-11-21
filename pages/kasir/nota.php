@@ -84,22 +84,25 @@ $is_new = isset($_GET['new']);
 </head>
 <body style="background: var(--bg-body);">
 
-<div style="max-width: 440px; margin: 20px auto 0; text-align: center;" class="no-print">
+<div style="max-width: 440px; margin: 20px auto 0;" class="no-print">
     <?php if ($is_new): ?>
         <div class="alert alert-success" style="text-align: left; margin-bottom: 12px;">
             <strong>Transaksi Berhasil!</strong> Stok bahan baku telah terpotong secara otomatis.
         </div>
     <?php endif; ?>
-    <div style="display:flex; justify-content:space-between; gap:10px;">
-        <a href="<?= BASE_URL ?>/pages/kasir/riwayat_penjualan.php" class="btn btn-secondary">
+    <div style="display:flex; justify-content:space-between; gap:10px; margin-bottom: 10px;">
+        <a href="<?= BASE_URL ?>/pages/kasir/riwayat_penjualan.php" class="btn btn-secondary" style="flex:1; justify-content:center;">
             &larr; Riwayat Penjualan
         </a>
         <?php if (current_user_role() === 'kasir'): ?>
-            <a href="<?= BASE_URL ?>/pages/kasir/penjualan.php" class="btn btn-primary">
+            <a href="<?= BASE_URL ?>/pages/kasir/penjualan.php" class="btn btn-secondary" style="flex:1; justify-content:center;">
                 + Transaksi Baru
             </a>
         <?php endif; ?>
     </div>
+    <button type="button" onclick="window.print()" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 15px; padding: 10px;">
+        🖨️ Cetak Struk
+    </button>
 </div>
 
 <div class="receipt-card">
@@ -152,6 +155,12 @@ $is_new = isset($_GET['new']);
         <p>Terima kasih atas kunjungan Anda!</p>
         <p>Nikmati Kopi & Sajian Khas LO.LO Resto</p>
     </div>
+</div>
+
+<div style="max-width: 440px; margin: 15px auto 30px; text-align: center;" class="no-print">
+    <button type="button" onclick="window.print()" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 15px; padding: 10px;">
+        🖨️ Cetak Struk
+    </button>
 </div>
 
 </body>

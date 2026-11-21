@@ -57,7 +57,7 @@ require_once __DIR__ . '/../../includes/header.php';
                             </td>
                             <td>
                                 <a href="<?= BASE_URL ?>/pages/kasir/nota.php?id=<?= $r['id_penjualan'] ?>" class="btn btn-sm btn-outline">
-                                    Lihat Detail Struk
+                                    Lihat / Cetak Struk
                                 </a>
                             </td>
                         </tr>
