@@ -15,6 +15,9 @@ $flash = get_flash();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($page_title) ?> - LO.LO Coffee & Resto</title>
+    <link rel="icon" type="image/png" href="<?= BASE_URL ?>/assets/img/logo.png">
+    <link rel="shortcut icon" type="image/png" href="<?= BASE_URL ?>/assets/img/logo.png">
+    <link rel="apple-touch-icon" href="<?= BASE_URL ?>/assets/img/logo.png">
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css">
 </head>
 <body>

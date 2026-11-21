@@ -25,6 +25,9 @@ $is_new = isset($_GET['new']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Struk #TRX-<?= str_pad($penjualan['id_penjualan'], 5, '0', STR_PAD_LEFT) ?> - LO.LO Coffee & Resto</title>
+    <link rel="icon" type="image/png" href="<?= BASE_URL ?>/assets/img/logo.png">
+    <link rel="shortcut icon" type="image/png" href="<?= BASE_URL ?>/assets/img/logo.png">
+    <link rel="apple-touch-icon" href="<?= BASE_URL ?>/assets/img/logo.png">
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css">
     <style>
         .receipt-card {
@@ -90,19 +93,16 @@ $is_new = isset($_GET['new']);
             <strong>Transaksi Berhasil!</strong> Stok bahan baku telah terpotong secara otomatis.
         </div>
     <?php endif; ?>
-    <div style="display:flex; justify-content:space-between; gap:10px; margin-bottom: 10px;">
-        <a href="<?= BASE_URL ?>/pages/kasir/riwayat_penjualan.php" class="btn btn-secondary" style="flex:1; justify-content:center;">
+    <div style="display:flex; justify-content:space-between; gap:10px;">
+        <a href="<?= BASE_URL ?>/pages/kasir/riwayat_penjualan.php" class="btn btn-secondary">
             &larr; Riwayat Penjualan
         </a>
         <?php if (current_user_role() === 'kasir'): ?>
-            <a href="<?= BASE_URL ?>/pages/kasir/penjualan.php" class="btn btn-secondary" style="flex:1; justify-content:center;">
+            <a href="<?= BASE_URL ?>/pages/kasir/penjualan.php" class="btn btn-primary">
                 + Transaksi Baru
             </a>
         <?php endif; ?>
     </div>
-    <button type="button" onclick="window.print()" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 15px; padding: 10px;">
-        🖨️ Cetak Struk
-    </button>
 </div>
 
 <div class="receipt-card">
@@ -155,12 +155,6 @@ $is_new = isset($_GET['new']);
         <p>Terima kasih atas kunjungan Anda!</p>
         <p>Nikmati Kopi & Sajian Khas LO.LO Resto</p>
     </div>
-</div>
-
-<div style="max-width: 440px; margin: 15px auto 30px; text-align: center;" class="no-print">
-    <button type="button" onclick="window.print()" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 15px; padding: 10px;">
-        🖨️ Cetak Struk
-    </button>
 </div>
 
 </body>

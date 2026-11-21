@@ -25,6 +25,9 @@ $ringkasan = $penjualanModel->getRingkasanLaporan($tanggal_awal, $tanggal_akhir)
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laporan Penjualan (<?= date('d-m-Y', strtotime($tanggal_awal)) ?> sd <?= date('d-m-Y', strtotime($tanggal_akhir)) ?>) - LO.LO Resto</title>
+    <link rel="icon" type="image/png" href="<?= BASE_URL ?>/assets/img/logo.png">
+    <link rel="shortcut icon" type="image/png" href="<?= BASE_URL ?>/assets/img/logo.png">
+    <link rel="apple-touch-icon" href="<?= BASE_URL ?>/assets/img/logo.png">
     <style>
         @page {
             size: A4 portrait;
